@@ -31,6 +31,8 @@ public class RabbitmqUtil {
         factory.setUsername("guest");
         //        设置密码
         factory.setPassword("guest");
+        //        设置虚拟主机
+        factory.setVirtualHost("/test");
         return factory.newConnection().createChannel();
     }
 }
