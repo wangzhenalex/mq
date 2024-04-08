@@ -33,6 +33,12 @@ public class Consumer01 {
     public static final String DEAD_QUEUE = "dead_queue";
 
     public static void main(String[] args) throws IOException, TimeoutException {
+        /**
+         * 有三个场景
+         * 1、TTL 过期
+         * 2、队列长度限制
+         * 3、消费者拒绝接收消息
+         */
         Channel channel = RabbitmqUtil.getChannel();
         //声明一个普通交换机，类型是direct
         channel.exchangeDeclare(NORMAL_EXCHANGE, BuiltinExchangeType.DIRECT);
