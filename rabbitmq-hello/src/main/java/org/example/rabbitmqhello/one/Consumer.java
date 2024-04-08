@@ -39,6 +39,7 @@ public class Consumer {
             };
             // 消费消息
             channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+                System.out.println("取消消费");
             });
         } catch (Exception e) {
             e.printStackTrace();
