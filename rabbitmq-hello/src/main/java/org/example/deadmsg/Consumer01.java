@@ -8,6 +8,7 @@ import org.example.rabbitmqhello.utils.RabbitmqUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -44,7 +45,7 @@ public class Consumer01 {
         //        arguments.put("x-message-ttl", 10000);
         arguments.put("x-dead-letter-routing-key", "lisi");
         //设置队列的长度,超过长度后会进入私信队列
-        arguments.put("x-max-length", 5);
+        //        arguments.put("x-max-length", 5);
 
         //--------------------------------
         //死信队列
@@ -58,10 +59,19 @@ public class Consumer01 {
         System.out.println("等待接收消息.....");
 
         DeliverCallback deliverCallback = (consumerTag, message) -> {
-            System.out.println("Consumer01 接收到的消息：" + new String(message.getBody()));
+            String info = new String(message.getBody());
+            System.out.println("Consumer01 接收到的消息：" +info);
+            if (Objects.equals(info, "info5")) {
+                System.out.println("Consumer01 拒绝接收消息：" + info);
+                //拒绝接收消息
+                channel.basicReject(message.getEnvelope().getDeliveryTag(), false);
+            }else {
+                channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
+            }
         };
 
-        channel.basicConsume(NORMAL_QUEUE, true, deliverCallback, consumerTag -> {
+        //开启手动应答
+        channel.basicConsume(NORMAL_QUEUE, false, deliverCallback, consumerTag -> {
             System.out.println("接收消息被中断");
         });
     }
