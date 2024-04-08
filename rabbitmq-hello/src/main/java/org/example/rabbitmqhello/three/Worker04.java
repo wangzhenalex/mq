@@ -24,10 +24,12 @@ public class Worker04 {
     public static void main(String[] args) throws IOException, TimeoutException {
         Channel channel = RabbitmqUtil.getChannel();
 
+
+        //预取值
+        int preFetchCount = 2;
+
         //不公平分发
-        channel.basicQos(1);
-
-
+        channel.basicQos(preFetchCount);
         System.out.println("消费者 4 准备接收消息。时间较长 30 秒完成任务");
 
         CancelCallback callback = consumerTag -> {
