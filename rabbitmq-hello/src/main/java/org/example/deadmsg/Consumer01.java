@@ -40,12 +40,15 @@ public class Consumer01 {
         Map<String, Object> arguments = new HashMap<>();
         //正常队列设置私信交换机
         arguments.put("x-dead-letter-exchange", DEAD_EXCHANGE);
-        arguments.put("x-message-ttl", 10000);
+        //不建议在这里设置，建议在生产设置
+        //        arguments.put("x-message-ttl", 10000);
         arguments.put("x-dead-letter-routing-key", "lisi");
-        channel.queueDeclare(NORMAL_QUEUE, false, false, false, arguments);
+        //设置队列的长度,超过长度后会进入私信队列
+        arguments.put("x-max-length", 5);
 
         //--------------------------------
         //死信队列
+        channel.queueDeclare(NORMAL_QUEUE, false, false, false, arguments);
         channel.queueDeclare(DEAD_QUEUE, false, false, false, null);
 
         //绑定交换机和队列
@@ -58,7 +61,7 @@ public class Consumer01 {
             System.out.println("Consumer01 接收到的消息：" + new String(message.getBody()));
         };
 
-        channel.basicConsume(DEAD_QUEUE, true,deliverCallback, consumerTag -> {
+        channel.basicConsume(NORMAL_QUEUE, true, deliverCallback, consumerTag -> {
             System.out.println("接收消息被中断");
         });
     }

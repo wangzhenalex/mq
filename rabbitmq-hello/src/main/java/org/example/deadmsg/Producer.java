@@ -23,12 +23,12 @@ public class Producer {
         Channel channel = RabbitmqUtil.getChannel();
 
         //死信消息 设置 TTL 时间
-        AMQP.BasicProperties properties = new AMQP.BasicProperties().builder().expiration("10000").build();
+//        AMQP.BasicProperties properties = new AMQP.BasicProperties().builder().expiration("10000").build();
 
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < 10; i++) {
             String message = "info" + i;
             SleepUtil.sleep(1);
-            channel.basicPublish(EXCHANGE_NAME, "zhangsan", properties, message.getBytes());
+            channel.basicPublish(EXCHANGE_NAME, "zhangsan", null, message.getBytes());
             System.out.println("生产者发送消息：" + message);
         }
     }

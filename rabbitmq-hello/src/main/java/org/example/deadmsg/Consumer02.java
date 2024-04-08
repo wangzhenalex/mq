@@ -30,6 +30,8 @@ public class Consumer02 {
 
         channel.exchangeDeclare(DEAD_EXCHANGE, BuiltinExchangeType.DIRECT);
 
+        channel.queueBind(DEAD_QUEUE, DEAD_EXCHANGE, "lisi");
+
         System.out.println("等待接收消息.....");
 
         DeliverCallback deliverCallback = (consumerTag, message) -> {
