@@ -23,6 +23,10 @@ public class TTLQueueConfig {
     //普通队列的名称
     public static final String QUEUE_A = "QA";
     public static final String QUEUE_B = "QB";
+    /**
+     * 不设置延迟时间的队列
+     */
+    public static final String QUEUE_C = "QC";
     //死信队列名称
     public static final String DEAD_LETTER_QUEUE_D = "QD";
 
@@ -64,6 +68,18 @@ public class TTLQueueConfig {
         return QueueBuilder.durable(QUEUE_B).withArguments(arguments).build();
     }
 
+    //声明队列A
+    @Bean("queueC")
+    public Queue queueC() {
+        Map<String, Object> arguments = new HashMap<>();
+        //设置死信交换机
+        arguments.put("x-dead-letter-exchange", Y_DEAD_LETTER_EXCHANGE);
+        //设置死信RoutKey
+        arguments.put("x-dead-letter-routing-key", "YD");
+        return QueueBuilder.durable(QUEUE_C).withArguments(arguments).build();
+    }
+
+
     //声明死信队列
     @Bean("queueD")
     public Queue queueD() {
@@ -81,7 +97,14 @@ public class TTLQueueConfig {
     public Binding queueBBindingX(@Qualifier("queueB") Queue queueB,
                                   @Qualifier("xExchange") DirectExchange exchange) {
         return BindingBuilder.bind(queueB).to(exchange).with("XB");
-    }  //绑定
+    }
+    //绑定
+    @Bean
+    public Binding queueCBindingX(@Qualifier("queueC") Queue queueD,
+                                  @Qualifier("xExchange") DirectExchange exchange) {
+        return BindingBuilder.bind(queueD).to(exchange).with("XC");
+    }
+    //绑定
     @Bean
     public Binding queueDBindingY(@Qualifier("queueD") Queue queueD,
                                   @Qualifier("yExchange") DirectExchange exchange) {
