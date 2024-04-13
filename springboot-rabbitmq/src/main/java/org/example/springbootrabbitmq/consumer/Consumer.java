@@ -20,6 +20,6 @@ public class Consumer {
     @RabbitListener(queues = ConfirmConfig.CONFIRM_QUEUE_NAME)
     public void receiveConfirmMsg(Message message, Channel channel) {
         //打印消息
-        log.info("接收到消息的队列 confirm.queue：" + new String(message.getBody()));
+        log.info("接收到消息的队列 confirm.queue：" + message);
     }
 }

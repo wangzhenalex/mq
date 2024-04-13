@@ -42,7 +42,7 @@ public class MyCallBack implements RabbitTemplate.ConfirmCallback {
         if (ack) {
             log.info("id:{}消息被接受", null != correlationData ? correlationData.getId() : "");
         } else {
-            log.error("消息发送失败，原因：{}", cause);
+            log.error("消息发送失败，原因：{},correlationData:{}", cause,correlationData);
         }
     }
 }
