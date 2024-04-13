@@ -40,6 +40,7 @@ public class SendMsgController {
 
     /**
      * 开始发消息-带有过期时间
+     * todo 这里有一个问题，基于队列的死信，过期时间会不准确
      *
      * @param message
      */
