@@ -1,6 +1,7 @@
 package org.example.springbootrabbitmq.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.springbootrabbitmq.config.DelayedQueueConfig;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,10 +48,26 @@ public class SendMsgController {
     @GetMapping("/sendMsg/{message}/{ttlTime}")
     public void sendMsgWithTTL(@PathVariable("message") String message, @PathVariable("ttlTime") String ttlTime) {
         //发送消息
-        log.info("当前时间:{},发送一条信息给1个TTL队列QC：{}，时长：{}", LocalDateTime.now(), message, ttlTime);
+        log.info("当前时间:{},发送一条信息给1个TTL队列QC：{}，时长：{}", LocalDateTime.now(), message + "-" + ttlTime, ttlTime);
 
-        rabbitTemplate.convertAndSend("X", "XC", "消息来自ttl为" + ttlTime + "毫秒的队列。" + message, msg -> {
+        rabbitTemplate.convertAndSend("X", "XC",  message + "-" + ttlTime, msg -> {
             msg.getMessageProperties().setExpiration(ttlTime);
+            return msg;
+        });
+    }
+
+    /**
+     * 开始发消息-延迟消息
+     *
+     * @param message
+     */
+    @GetMapping("/sendDelayMsg/{message}/{ttlTime}")
+    public void sendDelayMsgWithTTL(@PathVariable("message") String message, @PathVariable("ttlTime") Integer ttlTime) {
+        //发送消息
+        log.info("当前时间:{},发送一条信息给1个延迟消息：{}，时长：{}", LocalDateTime.now(), message + "-" + ttlTime, ttlTime);
+
+        rabbitTemplate.convertAndSend(DelayedQueueConfig.DELAYED_EXCHANGE, DelayedQueueConfig.DELAYED_ROUTING_KEY,  message + "-" + ttlTime, msg -> {
+            msg.getMessageProperties().setDelay(ttlTime);
             return msg;
         });
     }

@@ -2,6 +2,7 @@ package org.example.springbootrabbitmq.consumer;
 
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.example.springbootrabbitmq.config.DelayedQueueConfig;
 import org.example.springbootrabbitmq.config.TTLQueueConfig;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -18,12 +19,12 @@ import java.util.Date;
  */
 @Component
 @Slf4j
-public class DeadLetterQueueConsumer {
+public class DelayedQueueConsumer {
     /**
      * 进行接收消息
      */
-    @RabbitListener(queues = TTLQueueConfig.DEAD_LETTER_QUEUE_D)
+    @RabbitListener(queues = DelayedQueueConfig.DELAYED_QUEUE)
     public void receiveD(Message msg, Channel channel) {
-        log.info("当前时间：{},收到死信队列的消息：{}", LocalDateTime.now(), new String(msg.getBody()));
+        log.info("当前时间：{},收到延迟队列的消息：{}", LocalDateTime.now(), new String(msg.getBody()));
     }
 }
