@@ -1,9 +1,6 @@
 package org.example.springbootrabbitmq.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -18,17 +15,16 @@ import org.springframework.stereotype.Component;
 public class ConfirmConfig {
     // 交换机名称
     public static final String CONFIRM_EXCHANGE_NAME = "confirm_exchange";
-
     // 队列名称
     public static final String CONFIRM_QUEUE_NAME = "confirm_queue";
-
     // RoutingKey
     public static final String CONFIRM_ROUTING_KEY = "confirm_routingKey";
 
     //声明交换机
     @Bean("confirmExchange")
     public DirectExchange confirmExchange() {
-        return new DirectExchange(CONFIRM_EXCHANGE_NAME);
+        return ExchangeBuilder.directExchange(CONFIRM_EXCHANGE_NAME).durable(true)
+                .withArgument ("alternate-exchange", BackUpExChangeConfig.BACKUP_EXCHANGE).build();
     }
 
     //声明队列
