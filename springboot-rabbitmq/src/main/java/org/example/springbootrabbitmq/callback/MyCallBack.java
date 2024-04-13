@@ -1,9 +1,9 @@
 package org.example.springbootrabbitmq.callback;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -14,10 +14,12 @@ import javax.annotation.Resource;
  * @date : 2024/4/13 10:50
  * @Version: 1.0
  * @Desc : 回调
+ * 1、需要注入到rabbitTemplate
+ * 2、需要配置进行开启confirm、return
  */
 @Slf4j
 @Component
-public class MyCallBack implements RabbitTemplate.ConfirmCallback {
+public class MyCallBack implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnCallback {
 
     @Resource
     private RabbitTemplate rabbitTemplate;
@@ -28,6 +30,7 @@ public class MyCallBack implements RabbitTemplate.ConfirmCallback {
     @PostConstruct
     public void init() {
         rabbitTemplate.setConfirmCallback(this);
+        rabbitTemplate.setReturnCallback(this);
     }
 
     /**
@@ -40,9 +43,15 @@ public class MyCallBack implements RabbitTemplate.ConfirmCallback {
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
         if (ack) {
-            log.info("id:{}消息被接受", null != correlationData ? correlationData.getId() : "");
+            log.info("交换机接收到消息,id:{}", null != correlationData ? correlationData.getId() : "");
         } else {
-            log.error("消息发送失败，原因：{},correlationData:{}", cause,correlationData);
+            log.error("交换机消息发送失败，原因：{},correlationData:{}", cause, correlationData);
         }
+    }
+
+    @Override
+    public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+        //接收到了回退消息
+        log.error("消息退回，原因：{},message:{},exchange:{},routingKey:{}", replyText, message, exchange, routingKey);
     }
 }

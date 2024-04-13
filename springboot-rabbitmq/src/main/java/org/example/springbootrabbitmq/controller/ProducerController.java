@@ -33,7 +33,11 @@ public class ProducerController {
         CorrelationData correlationData = new CorrelationData("id=uuid");
         //发送消息
         log.info("当前时间:{},发送高级确认消息：{}", LocalDateTime.now(), message);
-//        rabbitTemplate.convertAndSend(ConfirmConfig.CONFIRM_EXCHANGE_NAME, ConfirmConfig.CONFIRM_ROUTING_KEY, message,correlationData);
-        rabbitTemplate.convertAndSend(ConfirmConfig.CONFIRM_EXCHANGE_NAME + "_error", ConfirmConfig.CONFIRM_ROUTING_KEY, message,correlationData);
+        //rabbitTemplate.convertAndSend(ConfirmConfig.CONFIRM_EXCHANGE_NAME, ConfirmConfig.CONFIRM_ROUTING_KEY, message,correlationData);
+        //场景一、交换机是错误的
+//        rabbitTemplate.convertAndSend(ConfirmConfig.CONFIRM_EXCHANGE_NAME + "_error", ConfirmConfig.CONFIRM_ROUTING_KEY, message,correlationData);
+
+        //场景2、路由键是错误的
+        rabbitTemplate.convertAndSend(ConfirmConfig.CONFIRM_EXCHANGE_NAME , ConfirmConfig.CONFIRM_ROUTING_KEY + "_error", message);
     }
 }
